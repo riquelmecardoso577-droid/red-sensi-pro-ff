@@ -9,4 +9,4 @@
 - [x] PWA (manifest, ícones, sw, botão instalar)
 - [x] Segurança lote 1: curtidas, seguidores, membros de clã, comentários, perfis, config PIX e mídia restritos
 - [x] Segurança lote 2: admin sem auto-promoção, capas com aprovação, posts/vídeos/stories/clãs/desafios/loja restritos
-- [ ] Ativar acesso admin na conta do dono (aguardando e-mail do usuário)
+- [x] Ativar acesso admin na conta do dono (libera ao confirmar o e-mail do cadastro)
