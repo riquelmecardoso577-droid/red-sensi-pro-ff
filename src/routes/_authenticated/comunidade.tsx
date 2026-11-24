@@ -117,10 +117,15 @@ function Clas() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("clas")
-        .select("id,nome,tag,descricao,lider_id,lider:usuarios!clas_lider_id_fkey(nome),cla_membros(count)")
+        .select("id,nome,tag,descricao,lider_id,lider:usuarios!clas_lider_id_fkey(nome)")
         .order("created_at");
       if (error) throw error;
-      return (data ?? []) as unknown as { id: string; nome: string; tag: string; descricao: string; lider_id: string | null; lider: { nome: string } | null; cla_membros: { count: number }[] }[];
+      const { data: totais, error: erroTotais } = await supabase.rpc("membros_por_cla");
+      if (erroTotais) throw erroTotais;
+      const porCla = new Map((totais ?? []).map((t) => [t.cla_id, Number(t.total)]));
+      return ((data ?? []) as unknown as { id: string; nome: string; tag: string; descricao: string; lider_id: string | null; lider: { nome: string } | null }[]).map(
+        (c) => ({ ...c, total_membros: porCla.get(c.id) ?? 0 }),
+      );
     },
   });
   const { data: meuCla } = useQuery({
@@ -162,7 +167,7 @@ function Clas() {
               <div className="min-w-0 flex-1">
                 <p className="font-display text-2xl uppercase leading-none">{c.nome}</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {c.cla_membros[0]?.count ?? 0} membros{c.lider ? ` · líder ${c.lider.nome}` : ""}
+                  {c.total_membros} membros{c.lider ? ` · líder ${c.lider.nome}` : ""}
                 </p>
               </div>
             </div>

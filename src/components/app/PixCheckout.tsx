@@ -13,11 +13,11 @@ import { linkWhatsApp, whatsappValido } from "@/lib/whatsapp";
 
 export function useConfig() {
   return useQuery({
-    queryKey: ["config"],
+    queryKey: ["config-checkout"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("config").select("*").eq("id", 1).maybeSingle();
+      const { data, error } = await supabase.rpc("config_checkout");
       if (error) throw error;
-      return data;
+      return data?.[0] ?? null;
     },
   });
 }

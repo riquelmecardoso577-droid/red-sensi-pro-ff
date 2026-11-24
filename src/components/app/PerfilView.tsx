@@ -15,12 +15,12 @@ export function useContagemSocial(id: string) {
   return useQuery({
     queryKey: ["contagem-social", id],
     queryFn: async () => {
-      const [seg, sgn, pst] = await Promise.all([
-        supabase.from("seguidores").select("seguidor_id", { count: "exact", head: true }).eq("seguido_id", id),
-        supabase.from("seguidores").select("seguido_id", { count: "exact", head: true }).eq("seguidor_id", id),
+      const [seg, pst] = await Promise.all([
+        supabase.rpc("contagem_seguidores", { _usuario_id: id }),
         supabase.from("posts").select("id", { count: "exact", head: true }).eq("usuario_id", id),
       ]);
-      return { seguidores: seg.count ?? 0, seguindo: sgn.count ?? 0, posts: pst.count ?? 0 };
+      const linha = seg.data?.[0];
+      return { seguidores: Number(linha?.seguidores ?? 0), seguindo: Number(linha?.seguindo ?? 0), posts: pst.count ?? 0 };
     },
   });
 }

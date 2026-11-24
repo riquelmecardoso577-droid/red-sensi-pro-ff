@@ -539,6 +539,7 @@ function Config() {
     onSuccess: () => {
       toast.success("Configurações salvas!");
       qc.invalidateQueries({ queryKey: ["config"] });
+      qc.invalidateQueries({ queryKey: ["config-checkout"] });
     },
     onError: () => toast.error("Falha ao salvar."),
   });

@@ -633,6 +633,22 @@ export type Database = {
           whatsapp: string
         }[]
       }
+      config_checkout: {
+        Args: never
+        Returns: {
+          chave_pix: string
+          cidade: string
+          nome_recebedor: string
+          whatsapp: string
+        }[]
+      }
+      contagem_seguidores: {
+        Args: { _usuario_id: string }
+        Returns: {
+          seguidores: number
+          seguindo: number
+        }[]
+      }
       existe_admin: { Args: never; Returns: boolean }
       has_role: {
         Args: {
@@ -641,6 +657,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      membros_por_cla: {
+        Args: never
+        Returns: {
+          cla_id: string
+          total: number
+        }[]
+      }
       meus_dados_privados: {
         Args: never
         Returns: {
@@ -648,6 +671,7 @@ export type Database = {
           whatsapp: string
         }[]
       }
+      midia_publicada: { Args: { _caminho: string }; Returns: boolean }
       reivindicar_admin: { Args: never; Returns: boolean }
       sensi_valores: {
         Args: { _sensi_id: string }
