@@ -36,6 +36,13 @@
       "when": 1795482315785,
       "tag": "0004_admin_por_email",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795483487371,
+      "tag": "0005_sensis_so_perfis_completos",
+      "breakpoints": true
     }
   ]
 }

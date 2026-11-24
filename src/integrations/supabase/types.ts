@@ -709,6 +709,7 @@ export type Database = {
         }[]
       }
       midia_publicada: { Args: { _caminho: string }; Returns: boolean }
+      perfil_completo: { Args: { _user_id: string }; Returns: boolean }
       sensi_valores: {
         Args: { _sensi_id: string }
         Returns: {
