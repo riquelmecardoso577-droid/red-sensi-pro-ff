@@ -7,5 +7,6 @@
 - [x] Verificado (form + aprovação admin)
 - [x] Admin /admin (pedidos, sensis CRUD, config, verificados, usuários, desafios)
 - [x] PWA (manifest, ícones, sw, botão instalar)
-- [ ] Segurança lote 1: curtidas, seguidores, membros de clã, comentários, perfis, config PIX e mídia restritos
-- [ ] Segurança lote 2: corrigir achados selecionados (stories, posts, clãs, desafios, vídeos, sensis + 4 outros)
+- [x] Segurança lote 1: curtidas, seguidores, membros de clã, comentários, perfis, config PIX e mídia restritos
+- [x] Segurança lote 2: admin sem auto-promoção, capas com aprovação, posts/vídeos/stories/clãs/desafios/loja restritos
+- [ ] Ativar acesso admin na conta do dono (aguardando e-mail do usuário)
