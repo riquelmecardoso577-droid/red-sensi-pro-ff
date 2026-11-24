@@ -117,7 +117,7 @@ function Clas() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("clas")
-        .select("id,nome,tag,descricao,lider_id,lider:usuarios(nome),cla_membros(count)")
+        .select("id,nome,tag,descricao,lider_id,lider:usuarios!clas_lider_id_fkey(nome),cla_membros(count)")
         .order("created_at");
       if (error) throw error;
       return (data ?? []) as unknown as { id: string; nome: string; tag: string; descricao: string; lider_id: string | null; lider: { nome: string } | null; cla_membros: { count: number }[] }[];

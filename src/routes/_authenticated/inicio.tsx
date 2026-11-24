@@ -40,7 +40,7 @@ function Inicio() {
       const de = pageParam * POR_PAGINA;
       const { data, error } = await supabase
         .from("posts")
-        .select(`id,foto_video,tipo,legenda,curtidas,created_at,usuario_id,autor:usuarios(${AUTOR_COLS}),comentarios(count)`)
+        .select(`id,foto_video,tipo,legenda,curtidas,created_at,usuario_id,autor:usuarios!posts_usuario_id_fkey(${AUTOR_COLS}),comentarios(count)`)
         .order("created_at", { ascending: false })
         .range(de, de + POR_PAGINA - 1);
       if (error) throw error;

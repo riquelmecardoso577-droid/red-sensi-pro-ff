@@ -57,7 +57,7 @@ function Videos() {
       const de = pageParam * POR_PAGINA;
       const { data, error } = await supabase
         .from("videos")
-        .select(`id,video_url,legenda,curtidas,sensi_id,usuario_id,created_at,autor:usuarios(${AUTOR_COLS}),sensi:sensis(modelo)`)
+        .select(`id,video_url,legenda,curtidas,sensi_id,usuario_id,created_at,autor:usuarios!videos_usuario_id_fkey(${AUTOR_COLS}),sensi:sensis(modelo)`)
         .order("created_at", { ascending: false })
         .range(de, de + POR_PAGINA - 1);
       if (error) throw error;

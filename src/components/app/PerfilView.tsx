@@ -74,7 +74,7 @@ export function GradePosts({ usuarioId, euId }: { usuarioId: string; euId: strin
     queryFn: async () => {
       const { data, error } = await supabase
         .from("posts")
-        .select(`id,foto_video,tipo,legenda,curtidas,created_at,usuario_id,autor:usuarios(${AUTOR_COLS}),comentarios(count)`)
+        .select(`id,foto_video,tipo,legenda,curtidas,created_at,usuario_id,autor:usuarios!posts_usuario_id_fkey(${AUTOR_COLS}),comentarios(count)`)
         .eq("usuario_id", usuarioId)
         .order("created_at", { ascending: false })
         .limit(60);

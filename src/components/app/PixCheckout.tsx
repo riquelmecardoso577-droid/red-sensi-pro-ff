@@ -80,8 +80,9 @@ export function PixCheckout({
     if (config?.whatsapp) {
       const texto = `Fala! Já fiz o PIX de ${formatarReais(valor)} da sensi *${sensi.modelo}* no RED SENSI PRO FF. Meu WhatsApp: ${whats.trim()}. Segue o comprovante:`;
       const url = linkWhatsApp(config.whatsapp, texto);
-      const janela = window.open(url, "_blank", "noopener");
-      if (!janela) window.location.href = url;
+      const janela = window.open(url, "_blank");
+      if (janela) janela.opener = null;
+      else window.location.href = url;
     }
   }
 
