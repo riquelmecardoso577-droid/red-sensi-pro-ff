@@ -100,6 +100,8 @@ function AuthPage() {
     if (error) {
       if (/13|idade/i.test(error.message)) toast.error("Cadastro bloqueado: idade mínima de 13 anos.");
       else if (/registered|already/i.test(error.message)) toast.error("Esse e-mail já tem conta. Entre com ele.");
+      else if (/weak|easy to guess|pwned|leaked/i.test(error.message) || error.code === "weak_password")
+        toast.error("Essa senha é muito fácil de adivinhar. Use uma senha mais forte, misturando letras, números e símbolos.");
       else toast.error("Não deu pra criar a conta. Confira os dados e tente de novo.");
       return;
     }
@@ -161,7 +163,7 @@ function AuthPage() {
                 <Campo label="Nick no Free Fire" name="nick" maxLength={40} />
                 <Campo label="WhatsApp" name="whatsapp" type="tel" inputMode="tel" placeholder="(11) 99999-9999" />
                 <Campo label="E-mail" name="email" type="email" autoComplete="email" />
-                <Campo label="Senha" name="senha" type="password" autoComplete="new-password" minLength={6} />
+                <Campo label="Senha" name="senha" type="password" autoComplete="new-password" minLength={6} hint="Use uma senha forte: senhas fáceis como 123456 são recusadas." />
                 <Button type="submit" variant="neon" size="xl" className="w-full" disabled={carregando}>
                   {carregando && <Loader2 className="animate-spin" />} CRIAR CONTA
                 </Button>
