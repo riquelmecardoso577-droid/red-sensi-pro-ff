@@ -52,27 +52,7 @@ const abaCls = "font-display text-base uppercase data-[state=active]:bg-primary 
 
 function Admin() {
   const euId = useEuId();
-  const qc = useQueryClient();
   const { data: souAdmin, isLoading } = useIsAdmin(euId);
-  const { data: existeAdmin } = useQuery({
-    queryKey: ["existe-admin"],
-    enabled: souAdmin === false,
-    queryFn: async () => (await supabase.rpc("existe_admin")).data ?? true,
-  });
-  const reivindicar = useMutation({
-    mutationFn: async () => {
-      const { data, error } = await supabase.rpc("reivindicar_admin");
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (ok) => {
-      if (ok) toast.success("Agora você é o admin!");
-      else toast.error("Já existe um admin.");
-      qc.invalidateQueries({ queryKey: ["is-admin", euId] });
-      qc.invalidateQueries({ queryKey: ["existe-admin"] });
-    },
-  });
-
   if (isLoading) return <Loader2 className="mx-auto mt-20 animate-spin text-primary" />;
 
   if (!souAdmin) {
@@ -80,16 +60,7 @@ function Admin() {
       <div className="mx-auto max-w-md p-8 text-center">
         <ShieldAlert className="mx-auto size-12 text-primary" />
         <h1 className="mt-3 font-display text-4xl uppercase">Área do admin</h1>
-        {existeAdmin === false ? (
-          <>
-            <p className="mt-2 text-sm text-muted-foreground">Ainda não existe admin. A primeira conta que ativar vira a dona do painel.</p>
-            <Button variant="neon" size="xl" className="mt-6 w-full" disabled={reivindicar.isPending} onClick={() => reivindicar.mutate()}>
-              ATIVAR MINHA CONTA COMO ADMIN
-            </Button>
-          </>
-        ) : (
-          <p className="mt-2 text-sm text-muted-foreground">Sua conta não tem acesso a esta área.</p>
-        )}
+        <p className="mt-2 text-sm text-muted-foreground">Sua conta não tem acesso a esta área.</p>
         <Button asChild variant="ghost" className="mt-4"><Link to="/inicio">Voltar ao app</Link></Button>
       </div>
     );
@@ -107,6 +78,7 @@ function Admin() {
           <TabsTrigger value="pedidos" className={abaCls}>Pedidos</TabsTrigger>
           <TabsTrigger value="verificados" className={abaCls}>Verificados</TabsTrigger>
           <TabsTrigger value="sensis" className={abaCls}>Sensis</TabsTrigger>
+          <TabsTrigger value="capas" className={abaCls}>Capas</TabsTrigger>
           <TabsTrigger value="usuarios" className={abaCls}>Usuários</TabsTrigger>
           <TabsTrigger value="desafios" className={abaCls}>Desafios</TabsTrigger>
           <TabsTrigger value="config" className={abaCls}>PIX/WhatsApp</TabsTrigger>
@@ -114,6 +86,7 @@ function Admin() {
         <TabsContent value="pedidos"><Pedidos /></TabsContent>
         <TabsContent value="verificados"><Verificados /></TabsContent>
         <TabsContent value="sensis"><Sensis /></TabsContent>
+        <TabsContent value="capas"><CapasAdmin /></TabsContent>
         <TabsContent value="usuarios"><Usuarios /></TabsContent>
         <TabsContent value="desafios"><DesafiosAdmin /></TabsContent>
         <TabsContent value="config"><Config /></TabsContent>
@@ -295,6 +268,50 @@ function Verificados() {
               <X /> REPROVAR
             </Button>
           </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ---------- CAPAS ---------- */
+function CapasAdmin() {
+  const qc = useQueryClient();
+  const { data = [], isLoading } = useQuery({
+    queryKey: ["admin-capas"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("admin_capas_pendentes");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  const decidir = useMutation({
+    mutationFn: async ({ id, aprovar }: { id: string; aprovar: boolean }) => {
+      const { error } = await supabase.rpc("admin_decidir_capas", { _usuario_id: id, _aprovar: aprovar });
+      if (error) throw error;
+    },
+    onSuccess: (_d, v) => {
+      toast.success(v.aprovar ? "Capas aprovadas no ranking!" : "Envio recusado.");
+      qc.invalidateQueries({ queryKey: ["admin-capas"] });
+      qc.invalidateQueries({ queryKey: ["ranking-capa"] });
+    },
+    onError: () => toast.error("Falha ao atualizar."),
+  });
+  return (
+    <div className="mt-3 space-y-3">
+      <p className="text-xs text-muted-foreground">Capas enviadas hoje pelos jogadores. Só entram no ranking depois de aprovadas.</p>
+      {isLoading && <Loader2 className="mx-auto animate-spin text-primary" />}
+      {!isLoading && data.length === 0 && <p className="py-6 text-center text-sm text-muted-foreground">Nenhum envio pendente hoje.</p>}
+      {data.map((u) => (
+        <div key={u.id} className="flex items-center gap-3 rounded-xl border border-border bg-card p-3">
+          <UserAvatar foto={u.foto} nome={u.nome} className="size-10" />
+          <div className="min-w-0 flex-1 text-sm">
+            <p className="truncate font-semibold">{u.nome}</p>
+            <p className="truncate text-xs text-muted-foreground">{u.nick_ff}</p>
+          </div>
+          <span className="font-display text-2xl text-primary">{u.capas_pendentes}</span>
+          <Button size="icon" className="bg-success text-background hover:bg-success/90" aria-label="Aprovar capas" disabled={decidir.isPending} onClick={() => decidir.mutate({ id: u.id, aprovar: true })}><Check /></Button>
+          <Button size="icon" variant="destructive" aria-label="Recusar capas" disabled={decidir.isPending} onClick={() => decidir.mutate({ id: u.id, aprovar: false })}><X /></Button>
         </div>
       ))}
     </div>

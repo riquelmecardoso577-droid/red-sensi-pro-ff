@@ -460,6 +460,8 @@ export type Database = {
           bio: string
           capas_dia: string
           capas_hoje: number
+          capas_pendentes: number
+          capas_pendentes_dia: string | null
           created_at: string
           data_nascimento: string | null
           foto: string | null
@@ -475,6 +477,8 @@ export type Database = {
           bio?: string
           capas_dia?: string
           capas_hoje?: number
+          capas_pendentes?: number
+          capas_pendentes_dia?: string | null
           created_at?: string
           data_nascimento?: string | null
           foto?: string | null
@@ -490,6 +494,8 @@ export type Database = {
           bio?: string
           capas_dia?: string
           capas_hoje?: number
+          capas_pendentes?: number
+          capas_pendentes_dia?: string | null
           created_at?: string
           data_nascimento?: string | null
           foto?: string | null
@@ -594,6 +600,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_capas_pendentes: {
+        Args: never
+        Returns: {
+          capas_dia: string
+          capas_hoje: number
+          capas_pendentes: number
+          foto: string
+          id: string
+          nick_ff: string
+          nome: string
+        }[]
+      }
+      admin_decidir_capas: {
+        Args: { _aprovar: boolean; _usuario_id: string }
+        Returns: undefined
+      }
       admin_listar_sensis: {
         Args: never
         Returns: {
@@ -649,7 +671,7 @@ export type Database = {
           seguindo: number
         }[]
       }
-      existe_admin: { Args: never; Returns: boolean }
+      enviar_capas: { Args: { _n: number }; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -672,7 +694,6 @@ export type Database = {
         }[]
       }
       midia_publicada: { Args: { _caminho: string }; Returns: boolean }
-      reivindicar_admin: { Args: never; Returns: boolean }
       sensi_valores: {
         Args: { _sensi_id: string }
         Returns: {

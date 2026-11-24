@@ -3,7 +3,7 @@ import { useRouteContext } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 
 export const PERFIL_COLS =
-  "id,nome,foto,idade,nick_ff,patente,capas_hoje,capas_dia,bio,verificado,created_at" as const;
+  "id,nome,foto,idade,nick_ff,patente,capas_hoje,capas_dia,capas_pendentes,capas_pendentes_dia,bio,verificado,created_at" as const;
 
 export interface Perfil {
   id: string;
@@ -14,6 +14,8 @@ export interface Perfil {
   patente: string;
   capas_hoje: number;
   capas_dia: string;
+  capas_pendentes: number;
+  capas_pendentes_dia: string | null;
   bio: string;
   verificado: boolean;
   created_at: string;

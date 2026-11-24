@@ -14,7 +14,7 @@ import { Logo } from "@/components/app/Logo";
 import { InstallButton } from "@/components/app/InstallButton";
 import { CabecalhoPerfil, GradePosts } from "@/components/app/PerfilView";
 import { PATENTES, perfilQuery, type Perfil, useEuId, useIsAdmin } from "@/hooks/use-app";
-import { capasDeHoje } from "@/lib/idade";
+import { capasDeHoje, hojeBrasilia } from "@/lib/idade";
 import { enviarArquivo } from "@/lib/midia";
 
 export const Route = createFileRoute("/_authenticated/perfil")({
@@ -100,21 +100,22 @@ function MeuPerfil() {
 function CapasHoje({ perfil }: { perfil: Perfil }) {
   const qc = useQueryClient();
   const atual = capasDeHoje(perfil.capas_hoje, perfil.capas_dia);
-  const [valor, setValor] = useState(atual);
+  const pendente = perfil.capas_pendentes_dia === hojeBrasilia() ? perfil.capas_pendentes : null;
+  const [valor, setValor] = useState(pendente ?? atual);
   const m = useMutation({
     mutationFn: async (n: number) => {
-      const { error } = await supabase.from("usuarios").update({ capas_hoje: n }).eq("id", perfil.id);
+      const { error } = await supabase.rpc("enviar_capas", { _n: n });
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Capas atualizadas no ranking!");
+      toast.success("Capas enviadas! Entram no ranking após aprovação do admin.");
       qc.invalidateQueries({ queryKey: ["perfil", perfil.id] });
       qc.invalidateQueries({ queryKey: ["ranking-capa"] });
     },
     onError: () => toast.error("Não foi possível salvar."),
   });
   return (
-    <div className="flex items-center gap-2 rounded-xl border border-border bg-card p-2">
+    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-2">
       <span className="flex-1 pl-2 text-sm text-muted-foreground">Capas de hoje</span>
       <Button size="icon" variant="secondary" aria-label="Menos" onClick={() => setValor(Math.max(0, valor - 1))}><Minus /></Button>
       <Input
@@ -125,7 +126,10 @@ function CapasHoje({ perfil }: { perfil: Perfil }) {
         className="h-9 w-16 bg-background text-center font-display text-xl"
       />
       <Button size="icon" variant="secondary" aria-label="Mais" onClick={() => setValor(Math.min(9999, valor + 1))}><Plus /></Button>
-      <Button size="sm" disabled={valor === atual || m.isPending} onClick={() => m.mutate(valor)}>Salvar</Button>
+      <Button size="sm" disabled={valor === (pendente ?? atual) || m.isPending} onClick={() => m.mutate(valor)}>Enviar</Button>
+      {pendente !== null && (
+        <span className="w-full basis-full pl-2 text-xs text-warning">Aguardando aprovação: {pendente} capas</span>
+      )}
     </div>
   );
 }
