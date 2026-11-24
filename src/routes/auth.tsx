@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, type ComponentProps, type FormEvent } from "react";
 import { toast } from "sonner";
+import { mensagemErroAuth } from "@/lib/auth-erros";
 import { Loader2, MailCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -62,7 +63,7 @@ function AuthPage() {
     });
     setCarregando(false);
     if (error) {
-      toast.error(error.message.includes("confirm") ? "Confirme seu e-mail antes de entrar." : "E-mail ou senha incorretos.");
+      toast.error(mensagemErroAuth(error, "entrar"));
       return;
     }
     navigate({ href: destinoSeguro(search.redirect), replace: true });
@@ -98,11 +99,7 @@ function AuthPage() {
     });
     setCarregando(false);
     if (error) {
-      if (/13|idade/i.test(error.message)) toast.error("Cadastro bloqueado: idade mínima de 13 anos.");
-      else if (/registered|already/i.test(error.message)) toast.error("Esse e-mail já tem conta. Entre com ele.");
-      else if (/weak|easy to guess|pwned|leaked/i.test(error.message) || error.code === "weak_password")
-        toast.error("Essa senha é muito fácil de adivinhar. Use uma senha mais forte, misturando letras, números e símbolos.");
-      else toast.error("Não deu pra criar a conta. Confira os dados e tente de novo.");
+      toast.error(mensagemErroAuth(error, "cadastrar"));
       return;
     }
     if (data.session) {
